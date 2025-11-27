@@ -1,0 +1,14 @@
+src/app/(dashboard)/jobs/[id]/page.tsx(21,23): error TS2552: Cannot find name 'useQueryClient'. Did you mean 'queryClient'?
+src/app/(dashboard)/jobs/[id]/page.tsx(34,26): error TS2304: Cannot find name 'useMutation'.
+src/app/(dashboard)/jobs/[id]/page.tsx(54,36): error TS2304: Cannot find name 'useMutation'.
+src/app/api/estimates/[id]/convert/route.ts(50,9): error TS2353: Object literal may only specify known properties, and 'title' does not exist in type 'Without<InvoiceCreateInput, InvoiceUncheckedCreateInput> & InvoiceUncheckedCreateInput'.
+src/app/api/estimates/[id]/pdf/route.ts(31,44): error TS2345: Argument of type 'FunctionComponentElement<EstimatePDFProps>' is not assignable to parameter of type 'ReactElement<DocumentProps, string | JSXElementConstructor<any>>'.
+  Types of property 'props' are incompatible.
+    Type 'EstimatePDFProps' has no properties in common with type 'DocumentProps'.
+src/app/api/estimates/[id]/pdf/route.ts(33,25): error TS2345: Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BodyInit | null | undefined'.
+  Type 'Buffer<ArrayBufferLike>' is missing the following properties from type 'URLSearchParams': size, append, delete, get, and 2 more.
+src/app/api/invoices/[id]/pdf/route.ts(31,44): error TS2345: Argument of type 'FunctionComponentElement<InvoicePDFProps>' is not assignable to parameter of type 'ReactElement<DocumentProps, string | JSXElementConstructor<any>>'.
+  Types of property 'props' are incompatible.
+    Type 'InvoicePDFProps' has no properties in common with type 'DocumentProps'.
+src/app/api/invoices/[id]/pdf/route.ts(33,25): error TS2345: Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BodyInit | null | undefined'.
+  Type 'Buffer<ArrayBufferLike>' is missing the following properties from type 'URLSearchParams': size, append, delete, get, and 2 more.
