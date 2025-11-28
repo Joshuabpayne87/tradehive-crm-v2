@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { getCompanyId, errorResponse, successResponse } from '@/lib/api-helpers'
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
     const companyId = await getCompanyId()
@@ -23,7 +26,7 @@ export async function GET(req: NextRequest) {
 
     const totalRevenue = invoices.reduce((acc, inv) => acc + inv.amountPaid, 0)
     const outstandingBalance = invoices.reduce((acc, inv) => acc + (inv.total - inv.amountPaid), 0)
-    
+
     // Revenue this month
     const revenueThisMonth = invoices
       .filter(inv => inv.createdAt >= startOfCurrentMonth && inv.createdAt <= endOfCurrentMonth)
@@ -31,11 +34,11 @@ export async function GET(req: NextRequest) {
 
     // 2. Counts
     const customersCount = await prisma.customer.count({ where: { companyId } })
-    const activeJobsCount = await prisma.job.count({ 
-      where: { 
+    const activeJobsCount = await prisma.job.count({
+      where: {
         companyId,
         status: { in: ['scheduled', 'in_progress'] }
-      } 
+      }
     })
     const pendingEstimatesCount = await prisma.estimate.count({
       where: {

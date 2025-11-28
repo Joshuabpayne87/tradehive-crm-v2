@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCompanyId, errorResponse, successResponse } from '@/lib/api-helpers'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
     const companyId = await getCompanyId()
@@ -69,7 +72,7 @@ export async function GET(req: NextRequest) {
         date: cust.createdAt,
       }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 10) // Return top 10 recent activities
+      .slice(0, 10) // Return top 10 recent activities
 
     return successResponse(activity)
   } catch (error) {

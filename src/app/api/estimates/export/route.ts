@@ -4,6 +4,9 @@ import { getCompanyId, errorResponse } from '@/lib/api-helpers'
 import { generateCsv } from '@/lib/export/csv-export'
 import { format } from 'date-fns'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
     const companyId = await getCompanyId()
@@ -16,7 +19,7 @@ export async function GET(req: NextRequest) {
     const whereClause: any = { companyId }
 
     if (status) whereClause.status = status
-    
+
     if (startDate && endDate) {
       whereClause.createdAt = {
         gte: new Date(startDate),

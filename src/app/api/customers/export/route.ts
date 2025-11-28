@@ -4,15 +4,18 @@ import { getCompanyId, errorResponse } from '@/lib/api-helpers'
 import { generateCsv } from '@/lib/export/csv-export'
 import { format } from 'date-fns'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
     const companyId = await getCompanyId()
     const { searchParams } = new URL(req.url)
     const query = searchParams.get('query')
     const sort = searchParams.get('sort')
-    
+
     const whereClause: any = { companyId }
-    
+
     if (query) {
       whereClause.OR = [
         { firstName: { contains: query, mode: 'insensitive' } },
