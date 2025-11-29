@@ -74,7 +74,7 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
     const subtotal = lineItems.reduce((acc, item) => {
       return acc + (item.quantity || 0) * (item.rate || 0)
     }, 0)
-    
+
     const tax = subtotal * ((taxRate || 0) / 100)
     const total = subtotal + tax
 
@@ -128,8 +128,8 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Customer</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <Select
+                      onValueChange={field.onChange}
                       value={field.value || undefined}
                       defaultValue={field.value || undefined}
                     >
@@ -183,7 +183,7 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(new Date(field.value), "PPP")
                               ) : (
                                 <span>Pick a date</span>
                               )}
@@ -194,7 +194,7 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                         <PopoverContent className="w-auto p-0 z-[9999]" align="start" side="bottom" sideOffset={8}>
                           <Calendar
                             mode="single"
-                            selected={field.value}
+                            selected={field.value ? new Date(field.value) : undefined}
                             onSelect={field.onChange}
                             disabled={(date) =>
                               date < new Date()
@@ -212,24 +212,24 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      value={field.value || undefined}
-                      defaultValue={field.value || undefined}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="sent">Sent</SelectItem>
-                        <SelectItem value="approved">Approved</SelectItem>
-                        <SelectItem value="rejected">Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value || undefined}
+                        defaultValue={field.value || undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="sent">Sent</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -240,17 +240,17 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
 
           <Card className="bg-white/95 shadow-lg border-2">
             <CardContent className="pt-6">
-               <FormField
+              <FormField
                 control={form.control}
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Notes / Terms</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Estimate valid for 30 days..." 
+                      <Textarea
+                        placeholder="Estimate valid for 30 days..."
                         className="h-[200px] resize-none"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -266,7 +266,7 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
             <h3 className="text-lg font-medium mb-4">Line Items</h3>
             <div className="space-y-4">
               {fields.map((field, index) => (
-                  <div key={field.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 md:gap-4 items-end border-b pb-4">
+                <div key={field.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 md:gap-4 items-end border-b pb-4">
                   <div className="sm:col-span-6">
                     <FormField
                       control={form.control}
@@ -289,19 +289,19 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                         <FormItem>
                           <FormLabel className={index !== 0 ? "sm:sr-only" : ""}>Qty</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              min="1" 
+                            <Input
+                              type="number"
+                              min="1"
                               step="0.1"
-                              {...field} 
-                              onChange={e => field.onChange(parseFloat(e.target.value))} 
+                              {...field}
+                              onChange={e => field.onChange(parseFloat(e.target.value))}
                             />
                           </FormControl>
                         </FormItem>
                       )}
                     />
-                     {/* Mobile only label for next field to align grid */}
-                     <div className="sm:hidden"></div>
+                    {/* Mobile only label for next field to align grid */}
+                    <div className="sm:hidden"></div>
                   </div>
                   <div className="sm:col-span-2">
                     <FormField
@@ -311,12 +311,12 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                         <FormItem>
                           <FormLabel className={index !== 0 ? "sm:sr-only" : ""}>Rate</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              min="0" 
+                            <Input
+                              type="number"
+                              min="0"
                               step="0.01"
-                              {...field} 
-                              onChange={e => field.onChange(parseFloat(e.target.value))} 
+                              {...field}
+                              onChange={e => field.onChange(parseFloat(e.target.value))}
                             />
                           </FormControl>
                         </FormItem>
@@ -364,10 +364,10 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
                   render={({ field }) => (
                     <FormItem className="w-20 mb-0">
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          step="0.1" 
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.1"
                           className="h-8 text-right"
                           {...field}
                           onChange={e => field.onChange(parseFloat(e.target.value))}

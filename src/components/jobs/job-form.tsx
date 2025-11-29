@@ -119,8 +119,8 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Customer</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
+              <Select
+                onValueChange={field.onChange}
                 value={field.value || undefined}
                 defaultValue={field.value || undefined}
               >
@@ -157,7 +157,7 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
         />
 
         <div className="grid grid-cols-2 gap-4">
-           <FormField
+          <FormField
             control={form.control}
             name="scheduledAt"
             render={({ field }) => (
@@ -174,7 +174,7 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(new Date(field.value), "PPP")
                         ) : (
                           <span>Pick a date</span>
                         )}
@@ -185,7 +185,7 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
                   <PopoverContent className="w-auto p-0 z-[9999]" align="start" side="bottom" sideOffset={8}>
                     <Calendar
                       mode="single"
-                      selected={field.value}
+                      selected={field.value ? new Date(field.value) : undefined}
                       onSelect={field.onChange}
                       initialFocus
                     />
@@ -202,8 +202,8 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
+                <Select
+                  onValueChange={field.onChange}
                   value={field.value || undefined}
                   defaultValue={field.value || undefined}
                 >
@@ -231,8 +231,8 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Assign To Worker (Optional)</FormLabel>
-              <Select 
-                onValueChange={(value) => field.onChange(value === 'unassigned' ? undefined : value)} 
+              <Select
+                onValueChange={(value) => field.onChange(value === 'unassigned' ? undefined : value)}
                 value={field.value || 'unassigned'}
               >
                 <FormControl>

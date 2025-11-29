@@ -74,7 +74,7 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
     const subtotal = lineItems.reduce((acc, item) => {
       return acc + (item.quantity || 0) * (item.rate || 0)
     }, 0)
-    
+
     const tax = subtotal * ((taxRate || 0) / 100)
     const total = subtotal + tax
 
@@ -128,8 +128,8 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Customer</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <Select
+                      onValueChange={field.onChange}
                       value={field.value || undefined}
                       defaultValue={field.value || undefined}
                     >
@@ -169,7 +169,7 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(new Date(field.value), "PPP")
                               ) : (
                                 <span>Pick a date</span>
                               )}
@@ -180,7 +180,7 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                         <PopoverContent className="w-auto p-0 z-[9999]" align="start" side="bottom" sideOffset={8}>
                           <Calendar
                             mode="single"
-                            selected={field.value}
+                            selected={field.value ? new Date(field.value) : undefined}
                             onSelect={field.onChange}
                             initialFocus
                           />
@@ -195,25 +195,25 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      value={field.value || undefined}
-                      defaultValue={field.value || undefined}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="sent">Sent</SelectItem>
-                        <SelectItem value="paid">Paid</SelectItem>
-                        <SelectItem value="overdue">Overdue</SelectItem>
-                        <SelectItem value="void">Void</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value || undefined}
+                        defaultValue={field.value || undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="sent">Sent</SelectItem>
+                          <SelectItem value="paid">Paid</SelectItem>
+                          <SelectItem value="overdue">Overdue</SelectItem>
+                          <SelectItem value="void">Void</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -224,17 +224,17 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
 
           <Card className="bg-white/95 shadow-lg border-2">
             <CardContent className="pt-6">
-               <FormField
+              <FormField
                 control={form.control}
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Notes / Payment Instructions</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Please pay by check or bank transfer..." 
+                      <Textarea
+                        placeholder="Please pay by check or bank transfer..."
                         className="h-[150px] resize-none"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -273,12 +273,12 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                         <FormItem>
                           <FormLabel className={index !== 0 ? "sm:sr-only" : ""}>Qty</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              min="1" 
+                            <Input
+                              type="number"
+                              min="1"
                               step="0.1"
-                              {...field} 
-                              onChange={e => field.onChange(parseFloat(e.target.value))} 
+                              {...field}
+                              onChange={e => field.onChange(parseFloat(e.target.value))}
                             />
                           </FormControl>
                         </FormItem>
@@ -295,12 +295,12 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                         <FormItem>
                           <FormLabel className={index !== 0 ? "sm:sr-only" : ""}>Rate</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              min="0" 
+                            <Input
+                              type="number"
+                              min="0"
                               step="0.01"
-                              {...field} 
-                              onChange={e => field.onChange(parseFloat(e.target.value))} 
+                              {...field}
+                              onChange={e => field.onChange(parseFloat(e.target.value))}
                             />
                           </FormControl>
                         </FormItem>
@@ -348,10 +348,10 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                   render={({ field }) => (
                     <FormItem className="w-20 mb-0">
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          step="0.1" 
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.1"
                           className="h-8 text-right"
                           {...field}
                           onChange={e => field.onChange(parseFloat(e.target.value))}
@@ -369,8 +369,8 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                 <span>Total:</span>
                 <span>${form.watch('total')?.toFixed(2)}</span>
               </div>
-              
-               <div className="flex justify-between w-full sm:w-64 items-center pt-4 border-t">
+
+              <div className="flex justify-between w-full sm:w-64 items-center pt-4 border-t">
                 <span className="text-sm font-medium">Amount Paid:</span>
                 <FormField
                   control={form.control}
@@ -378,10 +378,10 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
                   render={({ field }) => (
                     <FormItem className="w-24 mb-0">
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          step="0.01" 
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
                           className="h-8 text-right"
                           {...field}
                           onChange={e => field.onChange(parseFloat(e.target.value))}
