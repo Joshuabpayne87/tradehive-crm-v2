@@ -17,7 +17,23 @@ interface EmailOptions {
   html: string
 }
 
-export async function sendEmail({ to, subject, html }: EmailOptions) {
+export async function sendEmail({ to, subject, html }: EmailOptions, companyId?: string) {
+  // Try Gmail API first if companyId is provided
+  if (companyId) {
+    try {
+      const { sendEmailViaGmail } = await import('./gmail')
+      const result = await sendEmailViaGmail(companyId, to, subject, html)
+      if (result.success) {
+        console.log('📧 Email sent via Gmail to:', to)
+        return
+      }
+      console.log('Gmail send failed, falling back to SMTP')
+    } catch (error) {
+      console.log('Gmail not available, falling back to SMTP:', error)
+    }
+  }
+
+  // Fallback to SMTP
   // Skip in development if no keys
   if (process.env.NODE_ENV === 'development' && !process.env.SENDGRID_API_KEY) {
     console.log('📧 [DEV] Email would be sent to:', to)
@@ -32,7 +48,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
       subject,
       html,
     })
-    console.log('📧 Email sent to:', to)
+    console.log('📧 Email sent via SMTP to:', to)
   } catch (error) {
     console.error('Failed to send email:', error)
     // Don't throw, just log - notifications shouldn't break the flow

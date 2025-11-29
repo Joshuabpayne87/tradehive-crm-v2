@@ -56,6 +56,10 @@ model Company {
   timezone           String?            @default("America/New_York")
   stripeAccountId    String?
   stripePricingModel String?
+  googleAccessToken  String?            // OAuth access token for Gmail API
+  googleRefreshToken String?            // OAuth refresh token
+  googleTokenExpiry  DateTime?          // When access token expires
+  emailConnected     Boolean            @default(false) // Whether Gmail is connected
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   attachments        Attachment[]

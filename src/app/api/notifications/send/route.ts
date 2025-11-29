@@ -25,13 +25,13 @@ export async function POST(req: NextRequest) {
       // Better: Create a magic link on the fly or link to generic portal login?
       // Best for MVP: Link to a public view if we had one, or the portal login with a "next" param?
       // Let's assume user has portal access or we send them to login.
-      const link = `${process.env.NEXTAUTH_URL}/portal/login` 
+      const link = `${process.env.NEXTAUTH_URL}/portal/login`
 
       await sendEmail({
         to: estimate.customer.email,
         subject: `Estimate #${estimate.estimateNumber} from ${estimate.company.name}`,
         html: getEstimateEmailHtml(estimate, link)
-      })
+      }, companyId) // Pass companyId for Gmail API
 
       await prisma.estimate.update({
         where: { id },
@@ -51,14 +51,13 @@ export async function POST(req: NextRequest) {
         return errorResponse('Invoice or customer email not found', 404)
       }
 
-      // Link directly to the public payment page
       const link = `${process.env.NEXTAUTH_URL}/pay/${invoice.id}`
 
       await sendEmail({
         to: invoice.customer.email,
         subject: `Invoice #${invoice.invoiceNumber} from ${invoice.company.name}`,
         html: getInvoiceEmailHtml(invoice, link)
-      })
+      }, companyId) // Pass companyId for Gmail API
 
       await prisma.invoice.update({
         where: { id },

@@ -2,53 +2,67 @@ import nodemailer from 'nodemailer'
 
 // Create reusable transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.example.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-    auth: {
-        user: process.env.SMTP_USER || 'user',
-        pass: process.env.SMTP_PASS || 'pass',
-    },
+  host: process.env.SMTP_HOST || 'smtp.example.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER || 'user',
+    pass: process.env.SMTP_PASS || 'pass',
+  },
 })
 
 interface EmailOptions {
-    to: string
-    subject: string
-    html: string
+  to: string
+  subject: string
+  html: string
 }
 
 /**
- * Send an email using the configured transporter
+ * Send an email using Gmail API if connected, otherwise fall back to SMTP
  */
-export async function sendEmail({ to, subject, html }: EmailOptions) {
-    // Don't send emails if SMTP is not configured (dev mode)
-    if (!process.env.SMTP_HOST) {
-        console.log('📧 [Mock Email] To:', to)
-        console.log('Subject:', subject)
-        // console.log('Body:', html)
-        return { success: true, messageId: 'mock-id' }
-    }
-
+export async function sendEmail({ to, subject, html }: EmailOptions, companyId?: string) {
+  // Try Gmail API first if companyId is provided
+  if (companyId) {
     try {
-        const info = await transporter.sendMail({
-            from: process.env.SMTP_FROM || '"TradeHive CRM" <noreply@tradehive.com>',
-            to,
-            subject,
-            html,
-        })
-        console.log('Message sent: %s', info.messageId)
-        return { success: true, messageId: info.messageId }
+      const { sendEmailViaGmail } = await import('./gmail')
+      const result = await sendEmailViaGmail(companyId, to, subject, html)
+      if (result.success) {
+        return result
+      }
+      console.log('Gmail send failed, falling back to SMTP')
     } catch (error) {
-        console.error('Error sending email:', error)
-        return { success: false, error }
+      console.log('Gmail not available, falling back to SMTP:', error)
     }
+  }
+
+  // Fallback to SMTP
+  // Don't send emails if SMTP is not configured (dev mode)
+  if (!process.env.SMTP_HOST) {
+    console.log('📧 [Mock Email] To:', to)
+    console.log('Subject:', subject)
+    return { success: true, messageId: 'mock-id' }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || '"TradeHive CRM" <noreply@tradehive.com>',
+      to,
+      subject,
+      html,
+    })
+    console.log('Message sent via SMTP: %s', info.messageId)
+    return { success: true, messageId: info.messageId }
+  } catch (error) {
+    console.error('Error sending email:', error)
+    return { success: false, error }
+  }
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
-    return sendEmail({
-        to: email,
-        subject: 'Welcome to TradeHive CRM',
-        html: `
+  return sendEmail({
+    to: email,
+    subject: 'Welcome to TradeHive CRM',
+    html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h1>Welcome to TradeHive, ${name}!</h1>
         <p>We're excited to have you on board. Your account has been successfully created.</p>
@@ -63,14 +77,14 @@ export async function sendWelcomeEmail(email: string, name: string) {
         </p>
       </div>
     `,
-    })
+  })
 }
 
 export async function sendInvoiceEmail(email: string, invoiceNumber: string, amount: number, link: string) {
-    return sendEmail({
-        to: email,
-        subject: `Invoice #${invoiceNumber} from TradeHive`,
-        html: `
+  return sendEmail({
+    to: email,
+    subject: `Invoice #${invoiceNumber} from TradeHive`,
+    html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h1>New Invoice Available</h1>
         <p>A new invoice has been generated for you.</p>
@@ -81,5 +95,5 @@ export async function sendInvoiceEmail(email: string, invoiceNumber: string, amo
         </p>
       </div>
     `,
-    })
+  })
 }
