@@ -108,7 +108,7 @@ model Customer {
   portalTokenExpires DateTime?
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
-  company            Company            @relation(fields: [companyId], references: [id])
+  company            Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
   estimates          Estimate[]
   invoices           Invoice[]
   jobs               Job[]
@@ -135,8 +135,8 @@ model Estimate {
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   attachments    Attachment[]
-  company        Company            @relation(fields: [companyId], references: [id])
-  customer       Customer           @relation(fields: [customerId], references: [id])
+  company        Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer       Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
   lineItems      EstimateLineItem[]
   invoices       Invoice[]
 }
@@ -175,11 +175,11 @@ model Invoice {
   estimateId         String?
   recurringInvoiceId String?
   attachments        Attachment[]
-  company            Company           @relation(fields: [companyId], references: [id])
-  customer           Customer          @relation(fields: [customerId], references: [id])
-  estimate           Estimate?         @relation(fields: [estimateId], references: [id])
-  job                Job?              @relation(fields: [jobId], references: [id])
-  recurringInvoice   RecurringInvoice? @relation(fields: [recurringInvoiceId], references: [id])
+  company            Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer           Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  estimate           Estimate?         @relation(fields: [estimateId], references: [id], onDelete: SetNull)
+  job                Job?              @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  recurringInvoice   RecurringInvoice? @relation(fields: [recurringInvoiceId], references: [id], onDelete: SetNull)
   lineItems          InvoiceLineItem[]
   payments           Payment[]
 }
@@ -207,8 +207,8 @@ model Payment {
   paidAt          DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  company         Company   @relation(fields: [companyId], references: [id])
-  invoice         Invoice   @relation(fields: [invoiceId], references: [id])
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 model Job {
@@ -230,9 +230,9 @@ model Job {
   assignedToUserId String?
   attachments      Attachment[]
   invoices         Invoice[]
-  assignedTo       User?        @relation("AssignedJobs", fields: [assignedToUserId], references: [id])
-  company          Company      @relation(fields: [companyId], references: [id])
-  customer         Customer     @relation(fields: [customerId], references: [id])
+  assignedTo       User?        @relation("AssignedJobs", fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  company          Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer         Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model Lead {
@@ -247,7 +247,7 @@ model Lead {
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  company   Company  @relation(fields: [companyId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model Transaction {
@@ -260,7 +260,7 @@ model Transaction {
   date        DateTime @default(now())
   invoiceId   String?
   createdAt   DateTime @default(now())
-  company     Company  @relation(fields: [companyId], references: [id])
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model RecurringInvoice {
@@ -277,8 +277,8 @@ model RecurringInvoice {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   invoices    Invoice[]
-  company     Company   @relation(fields: [companyId], references: [id])
-  customer    Customer  @relation(fields: [customerId], references: [id])
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model Attachment {
@@ -293,8 +293,8 @@ model Attachment {
   jobId      String?
   createdAt  DateTime  @default(now())
   createdBy  String?
-  company    Company   @relation(fields: [companyId], references: [id])
-  estimate   Estimate? @relation(fields: [estimateId], references: [id])
-  invoice    Invoice?  @relation(fields: [invoiceId], references: [id])
-  job        Job?      @relation(fields: [jobId], references: [id])
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  estimate   Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  invoice    Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  job        Job?      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }
