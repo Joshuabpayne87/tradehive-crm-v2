@@ -34,7 +34,10 @@ export const estimateSchema = z.object({
   description: z.string().optional(),
   estimateNumber: z.string().optional(), // Generated server-side if empty
   status: z.enum(["draft", "sent", "viewed", "approved", "rejected", "expired"]).optional(),
-  validUntil: z.union([z.string(), z.date()]).transform((val) => val instanceof Date ? val : new Date(val)).optional(),
+  validUntil: z.preprocess((arg) => {
+    if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
+    return arg;
+  }, z.date().optional()),
   lineItems: z.array(lineItemSchema).min(1, "At least one item is required"),
   notes: z.string().optional(),
   subtotal: z.number().optional(),
@@ -51,7 +54,10 @@ export const invoiceSchema = z.object({
   title: z.string().optional(), // Sometimes invoices have titles too
   invoiceNumber: z.string().optional(),
   status: z.enum(["draft", "sent", "viewed", "paid", "partial", "overdue", "void"]).optional(),
-  dueDate: z.union([z.string(), z.date()]).transform((val) => val instanceof Date ? val : new Date(val)).optional(),
+  dueDate: z.preprocess((arg) => {
+    if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
+    return arg;
+  }, z.date().optional()),
   lineItems: z.array(lineItemSchema).min(1, "At least one item is required"),
   notes: z.string().optional(),
   subtotal: z.number().optional(),
@@ -68,8 +74,14 @@ export const jobSchema = z.object({
   title: z.string().min(1, "Job title is required"),
   description: z.string().optional(),
   status: z.enum(["scheduled", "in_progress", "completed", "cancelled"]).optional(),
-  scheduledAt: z.union([z.string(), z.date()]).transform((val) => val instanceof Date ? val : new Date(val)).optional(),
-  completedAt: z.union([z.string(), z.date()]).transform((val) => val instanceof Date ? val : new Date(val)).optional(),
+  scheduledAt: z.preprocess((arg) => {
+    if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
+    return arg;
+  }, z.date().optional()),
+  completedAt: z.preprocess((arg) => {
+    if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
+    return arg;
+  }, z.date().optional()),
   notes: z.string().optional(),
   assignedToUserId: z.string().optional(),
   ...addressSchema.shape,
