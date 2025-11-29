@@ -46,8 +46,9 @@ export default function DashboardPage() {
       }
     },
     retry: false,
-    refetchOnWindowFocus: false,
-    refetchInterval: 30000,
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchInterval: 10000, // Refresh every 10 seconds
+    staleTime: 0, // Always consider data stale
   })
 
   const { data: activity, isLoading: activityLoading } = useQuery({
@@ -66,8 +67,9 @@ export default function DashboardPage() {
       }
     },
     retry: false,
-    refetchOnWindowFocus: false,
-    refetchInterval: 30000,
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchInterval: 10000, // Refresh every 10 seconds
+    staleTime: 0, // Always consider data stale
   })
 
   return (
@@ -136,14 +138,14 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-            <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
-              {/* Revenue Chart */}
-              <Card className="lg:col-span-4">
-                <CardHeader>
-                  <CardTitle className="text-lg md:text-xl">Revenue Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="pl-2">
-                  <div className="h-[250px] md:h-[350px]">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
+        {/* Revenue Chart */}
+        <Card className="lg:col-span-4">
+          <CardHeader>
+            <CardTitle className="text-lg md:text-xl">Revenue Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <div className="h-[250px] md:h-[350px]">
               {stats?.revenueHistory && stats.revenueHistory.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.revenueHistory}>
@@ -161,9 +163,9 @@ export default function DashboardPage() {
                       axisLine={false}
                       tickFormatter={(value) => `$${value}`}
                     />
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
-                      cursor={{fill: 'transparent'}}
+                      cursor={{ fill: 'transparent' }}
                     />
                     <Bar dataKey="total" fill="hsl(142, 76%, 36%)" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -177,8 +179,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-              {/* Recent Activity */}
-              <Card className="lg:col-span-3">
+        {/* Recent Activity */}
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
@@ -215,10 +217,10 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-            {/* Quick Actions */}
-            <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Quick Actions */}
+      <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-           <Link href="/estimates/new" className="flex flex-col items-center justify-center p-6 h-full">
+          <Link href="/estimates/new" className="flex flex-col items-center justify-center p-6 h-full">
             <FileText className="h-8 w-8 mb-2 text-primary" />
             <div className="font-medium">Create Estimate</div>
           </Link>
@@ -231,12 +233,12 @@ export default function DashboardPage() {
         </Card>
         <Card className="hover:bg-muted/50 transition-all cursor-pointer hover:scale-105">
           <div className="h-full">
-             <JobDialog trigger={
-               <div className="flex flex-col items-center justify-center p-6 h-full w-full">
+            <JobDialog trigger={
+              <div className="flex flex-col items-center justify-center p-6 h-full w-full">
                 <Calendar className="h-8 w-8 mb-2" style={{ color: 'hsl(45, 100%, 50%)' }} />
                 <div className="font-medium">Schedule Job</div>
               </div>
-             } />
+            } />
           </div>
         </Card>
         <Card className="hover:bg-muted/50 transition-all cursor-pointer hover:scale-105">

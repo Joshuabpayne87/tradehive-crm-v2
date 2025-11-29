@@ -103,6 +103,8 @@ export function EstimateBuilder({ initialData, customerId }: EstimateBuilderProp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['estimates'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['recent-activity'] })
       router.push('/estimates')
     },
   })

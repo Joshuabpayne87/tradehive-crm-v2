@@ -103,6 +103,8 @@ export function InvoiceBuilder({ initialData, customerId }: InvoiceBuilderProps)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['recent-activity'] })
       router.push('/invoices')
     },
   })

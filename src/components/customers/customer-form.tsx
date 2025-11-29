@@ -66,6 +66,8 @@ export function CustomerForm({ initialData, onSuccess }: CustomerFormProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['recent-activity'] })
       if (initialData) {
         queryClient.invalidateQueries({ queryKey: ['customer', initialData.id] })
       }

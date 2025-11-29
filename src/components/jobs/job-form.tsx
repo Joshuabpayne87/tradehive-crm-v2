@@ -90,6 +90,8 @@ export function JobForm({ initialData, onSuccess }: JobFormProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['recent-activity'] })
       if (initialData) {
         queryClient.invalidateQueries({ queryKey: ['job', initialData.id] })
       }
