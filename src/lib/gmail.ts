@@ -100,6 +100,10 @@ export async function sendEmailViaGmail(
             accessToken = await refreshAccessToken(companyId, company.googleRefreshToken)
         }
 
+        if (!accessToken) {
+            throw new Error('Failed to get access token')
+        }
+
         oauth2Client.setCredentials({ access_token: accessToken })
         const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
 
