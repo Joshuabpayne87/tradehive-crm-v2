@@ -68,11 +68,17 @@ export async function POST(req: NextRequest) {
     // Generate estimate number if not provided
     const estimateNumber = result.data.estimateNumber || `EST-${Date.now()}-${Math.floor(Math.random() * 1000)}`
 
+    // Convert validUntil to Date if it's a string
+    const validUntil = result.data.validUntil
+      ? (typeof result.data.validUntil === 'string' ? new Date(result.data.validUntil) : result.data.validUntil)
+      : undefined
+
     // Create estimate with line items
     const estimate = await prisma.estimate.create({
       data: {
         ...result.data,
         estimateNumber,
+        validUntil,
         companyId,
         lineItems: {
           create: result.data.lineItems.map(item => ({
