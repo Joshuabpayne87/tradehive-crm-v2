@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCompanyId, errorResponse, successResponse } from '@/lib/api-helpers'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 interface RouteParams {
   params: Promise<{ id: string }>
 }

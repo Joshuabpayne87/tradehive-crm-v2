@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { getCompanyId, errorResponse, successResponse } from '@/lib/api-helpers'
 import { estimateSchema } from '@/lib/validations'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 interface RouteParams {
   params: Promise<{ id: string }>
 }
@@ -53,7 +56,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     // Handle line items update if present
     // Standard Prisma way is to delete all and recreate, or update individually
     // For MVP, if lineItems are provided, we'll delete existing and recreate
-    
+
     if (result.data.lineItems) {
       await prisma.estimateLineItem.deleteMany({
         where: { estimateId: id }

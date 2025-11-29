@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { getCompanyId, errorResponse, successResponse } from '@/lib/api-helpers'
 import { estimateSchema } from '@/lib/validations'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
     const companyId = await getCompanyId()
@@ -17,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     if (status) whereClause.status = status
     if (customerId) whereClause.customerId = customerId
-    
+
     if (startDate && endDate) {
       whereClause.createdAt = {
         gte: new Date(startDate),
@@ -55,11 +58,15 @@ export async function POST(req: NextRequest) {
 
     const result = estimateSchema.safeParse(body)
     if (!result.success) {
-      return errorResponse(result.error.message, 400)
+      console.error('Estimate validation failed:', result.error.flatten())
+      return errorResponse(
+        `Validation error: ${result.error.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ')}`,
+        400
+      )
     }
 
     // Generate estimate number if not provided
-    const estimateNumber = result.data.estimateNumber || `EST-${Math.floor(Math.random() * 1000000)}`
+    const estimateNumber = result.data.estimateNumber || `EST-${Date.now()}-${Math.floor(Math.random() * 1000)}`
 
     // Create estimate with line items
     const estimate = await prisma.estimate.create({
@@ -73,21 +80,27 @@ export async function POST(req: NextRequest) {
             quantity: item.quantity,
             rate: item.rate,
             amount: item.quantity * item.rate,
-            type: item.type
+            type: item.type || 'service'
           }))
         }
       },
       include: {
-        lineItems: true
+        lineItems: true,
+        customer: true
       }
     })
 
+    console.log('Estimate created successfully:', estimate.id)
     return successResponse(estimate, 201)
   } catch (error) {
-    console.error(error)
-    return errorResponse('Failed to create estimate', 500)
+    console.error('Estimate creation error:', error)
+    return errorResponse(
+      error instanceof Error ? error.message : 'Failed to create estimate',
+      500
+    )
   }
 }
+
 
 
 
