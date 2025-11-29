@@ -97,7 +97,7 @@ export async function sendEmailViaGmail(
             if (!company.googleRefreshToken) {
                 throw new Error('No refresh token available')
             }
-            accessToken = await refreshAccessToken(companyId, company.googleRefreshToken)
+            accessToken = await refreshAccessToken(companyId, company.googleRefreshToken as string)
         }
 
         if (!accessToken) {
