@@ -34,7 +34,7 @@ export const estimateSchema = z.object({
   description: z.string().optional(),
   estimateNumber: z.string().optional(), // Generated server-side if empty
   status: z.enum(["draft", "sent", "viewed", "approved", "rejected", "expired"]).optional(),
-  validUntil: z.date().optional(),
+  validUntil: z.coerce.date().optional(),
   lineItems: z.array(lineItemSchema).min(1, "At least one item is required"),
   notes: z.string().optional(),
   subtotal: z.number().optional(),
@@ -51,7 +51,7 @@ export const invoiceSchema = z.object({
   title: z.string().optional(), // Sometimes invoices have titles too
   invoiceNumber: z.string().optional(),
   status: z.enum(["draft", "sent", "viewed", "paid", "partial", "overdue", "void"]).optional(),
-  dueDate: z.date().optional(),
+  dueDate: z.coerce.date().optional(),
   lineItems: z.array(lineItemSchema).min(1, "At least one item is required"),
   notes: z.string().optional(),
   subtotal: z.number().optional(),
@@ -68,8 +68,8 @@ export const jobSchema = z.object({
   title: z.string().min(1, "Job title is required"),
   description: z.string().optional(),
   status: z.enum(["scheduled", "in_progress", "completed", "cancelled"]).optional(),
-  scheduledAt: z.date().optional(),
-  completedAt: z.date().optional(),
+  scheduledAt: z.coerce.date().optional(),
+  completedAt: z.coerce.date().optional(),
   notes: z.string().optional(),
   assignedToUserId: z.string().optional(),
   ...addressSchema.shape,
