@@ -13,11 +13,15 @@ const signupSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  console.log('[Signup] Request received')
   try {
     const body = await req.json()
+    console.log(`[Signup] Body parsed: ${JSON.stringify({ ...body, password: '***' })}`)
+
     const result = signupSchema.safeParse(body)
 
     if (!result.success) {
+      console.error('[Signup] Validation failed:', JSON.stringify(result.error))
       return errorResponse(result.error.issues[0].message, 400)
     }
 
@@ -27,6 +31,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (existingUser) {
+      console.warn('[Signup] User already exists:', result.data.email)
       return errorResponse('User with this email already exists', 400)
     }
 
@@ -34,7 +39,8 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(result.data.password, 10)
 
     // Create Company and User in our database
-    const { company, user } = await prisma.$transaction(async (tx) => {
+    console.log('[Signup] Starting transaction')
+    const { company, user } = await prisma.$transaction(async (tx: any) => {
       // Create Company
       const company = await tx.company.create({
         data: {
@@ -56,9 +62,20 @@ export async function POST(req: NextRequest) {
 
       return { company, user }
     })
+    console.log(`[Signup] Transaction successful. User ID: ${user.id}`)
 
     // Create session for the new user
-    await createSession(user.id)
+    console.log('[Signup] Creating session...')
+    try {
+      await createSession(user.id)
+      console.log('[Signup] Session created successfully')
+    } catch (sessionError: any) {
+      console.error('[Signup] Session creation failed:', sessionError)
+      // Don't fail the request if session creation fails, just log it? 
+      // Or maybe we should fail? 
+      // For now, let's rethrow to see the error, but we logged it.
+      throw sessionError
+    }
 
     return successResponse({
       message: 'Account created successfully',
@@ -66,8 +83,11 @@ export async function POST(req: NextRequest) {
       companyId: company.id
     }, 201)
   } catch (error: any) {
-    console.error('Signup error:', error)
+    console.error('[Signup] Critical error:', error)
+    // Log full stack trace
+    if (error.stack) {
+      console.error(error.stack)
+    }
     return errorResponse(error.message || 'Failed to create account', 500)
   }
 }
-
