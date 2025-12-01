@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Company" ADD COLUMN IF NOT EXISTS "emailConnected" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Company" ADD COLUMN IF NOT EXISTS "googleAccessToken" TEXT;
+ALTER TABLE "Company" ADD COLUMN IF NOT EXISTS "googleRefreshToken" TEXT;
+ALTER TABLE "Company" ADD COLUMN IF NOT EXISTS "googleTokenExpiry" TIMESTAMP(3);
