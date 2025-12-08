@@ -42,14 +42,17 @@ export async function POST(req: NextRequest) {
     console.log('[Signup] Starting transaction')
     const { company, user } = await prisma.$transaction(async (tx: any) => {
       // Create Company
+      console.log('[Signup] Creating company...')
       const company = await tx.company.create({
         data: {
           name: result.data.companyName,
           email: result.data.email,
         }
       })
+      console.log('[Signup] Company created:', company.id)
 
       // Create User with hashed password
+      console.log('[Signup] Creating user...')
       const user = await tx.user.create({
         data: {
           email: result.data.email,
@@ -59,6 +62,7 @@ export async function POST(req: NextRequest) {
           companyId: company.id,
         }
       })
+      console.log('[Signup] User created:', user.id)
 
       return { company, user }
     })

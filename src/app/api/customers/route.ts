@@ -9,9 +9,9 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const query = searchParams.get('query')
     const sort = searchParams.get('sort')
-    
+
     const whereClause: any = { companyId }
-    
+
     if (query) {
       whereClause.OR = [
         { firstName: { contains: query, mode: 'insensitive' } },
@@ -46,22 +46,27 @@ export async function POST(req: NextRequest) {
   try {
     const companyId = await getCompanyId()
     const body = await req.json()
+    console.log('[API] Creating customer. CompanyID:', companyId, 'Body:', JSON.stringify(body))
 
     const result = customerSchema.safeParse(body)
     if (!result.success) {
+      console.error('[API] Validation failed:', result.error.message)
       return errorResponse(result.error.message, 400)
     }
 
+    console.log('[API] Validation successful. Saving to DB...')
     const customer = await prisma.customer.create({
       data: {
         ...result.data,
         companyId,
       },
     })
+    console.log('[API] Customer created successfully:', customer.id)
 
     return successResponse(customer, 201)
-  } catch (error) {
-    console.error(error)
+  } catch (error: any) {
+    console.error('[API] Failed to create customer:', error)
+    if (error.code) console.error('[API] Prisma Error Code:', error.code)
     return errorResponse('Failed to create customer', 500)
   }
 }

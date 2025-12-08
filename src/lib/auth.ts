@@ -9,8 +9,10 @@ export async function getAuthenticatedUser(request?: Request) {
   try {
     // Get session from cookie
     const session = await getSession()
+    console.log('[Auth] getAuthenticatedUser session found:', !!session)
 
     if (session?.user) {
+      // console.log('[Auth] User found in session:', session.user.id) 
       return {
         id: session.user.id,
         email: session.user.email,
@@ -18,6 +20,8 @@ export async function getAuthenticatedUser(request?: Request) {
         companyId: session.user.companyId,
         role: session.user.role,
       }
+    } else {
+      console.warn('[Auth] No user found in session')
     }
 
     // Fallback removed for production security
